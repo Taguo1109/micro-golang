@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-# 先啟動 User Service
+# 啟動 Auth Service
+./authsvc &
+
+# 啟動 User Service
 ./usersvc &
-# 再啟動 Order Service
+
+# 啟動 Order Service
 ./ordersvc &
-# 啟動 Nginx
+
+# 最後啟動 Nginx（前面都 background，nginx 用 foreground 方式）
 nginx -g "daemon off;" &> nginx.log
-# 等待所有子程序
+
+# 等待所有子程序結束
 wait

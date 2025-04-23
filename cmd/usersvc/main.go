@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"micro-golang/internal/middleware"
 	"micro-golang/internal/user"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(middleware.JWTAuth())
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
 	r.GET("/api/v1/users/:id", func(c *gin.Context) {

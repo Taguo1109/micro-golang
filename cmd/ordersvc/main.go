@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"micro-golang/internal/middleware"
 	"micro-golang/internal/order"
 	"os"
 )
@@ -30,6 +31,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(middleware.JWTAuth())
 	oh := order.NewHandler(userSvcURL)
 	r.GET("/orders/:id", oh.GetOrder)
 

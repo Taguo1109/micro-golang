@@ -9,6 +9,7 @@ RUN go mod download
 
 # 拷貝整个項目並編譯
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o authsvc cmd/authsvc/main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -o usersvc cmd/usersvc/main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -o ordersvc cmd/ordersvc/main.go
 
@@ -20,7 +21,8 @@ RUN apk add --no-cache bash nginx
 
 WORKDIR /app
 
-# 拷貝編譯好的兩支 binary 和腳本
+# 拷貝編譯好的三支 binary 和腳本
+COPY --from=builder /app/authsvc .
 COPY --from=builder /app/usersvc .
 COPY --from=builder /app/ordersvc .
 COPY run.sh .
