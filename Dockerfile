@@ -29,8 +29,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # 授權腳本執行
 RUN chmod +x run.sh
 
-# 暴露 HTTP 80 （nginx 監聽），内部 services 8000/9000 不必對外
-EXPOSE 80 8090
+# 暴露 HTTP 8080 （nginx 監聽），内部 services 8000/9000 不必對外
+EXPOSE 8080
 
 # 啟動腳本
 ENTRYPOINT ["./run.sh"]
