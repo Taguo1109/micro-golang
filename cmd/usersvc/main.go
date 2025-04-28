@@ -30,6 +30,7 @@ func main() {
 	r.Use(middleware.JWTAuth())
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
+	r.GET("/users/email/:id", uh.GetUserEmail)
 	r.GET("/api/v1/users/:id", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"test": "測試nginx新的url",

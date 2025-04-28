@@ -34,6 +34,7 @@ func main() {
 	r.Use(middleware.JWTAuth())
 	oh := order.NewHandler(userSvcURL)
 	r.GET("/orders/:id", oh.GetOrder)
+	r.GET("/orders/email/:id", oh.GetOrderWithEmail)
 
 	log.Printf("Order service running on :%s\n", port)
 	log.Fatal(r.Run(":" + port))

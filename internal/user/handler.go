@@ -27,3 +27,11 @@ func (h *Handler) GetUser(c *gin.Context) {
 		"name": "User" + id,
 	})
 }
+
+func (h *Handler) GetUserEmail(c *gin.Context) {
+	// 模擬 DB
+	id := c.Param("id")
+	c.JSON(http.StatusOK, gin.H{
+		"email": id + "@example.com",
+	})
+}
