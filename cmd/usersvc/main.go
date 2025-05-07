@@ -36,12 +36,12 @@ func main() {
 
 	r := gin.Default()
 	
+	// 跨域設定(要先放跨域)在擺權限過濾
+	setupCorsMiddleware(r)
 	// 需權限的名單
 	r.Use(middlewares.JWTAuth())
 	// 加入全域錯誤攔截器
 	r.Use(middlewares.GlobalErrorHandler())
-	// 跨域設定
-	setupCorsMiddleware(r)
 
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
