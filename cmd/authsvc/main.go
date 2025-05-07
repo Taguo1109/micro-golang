@@ -44,7 +44,7 @@ func main() {
 
 	// 跨域設定
 	setupCorsMiddleware(r)
-
+	r.Group("/auth")
 	r.POST("/login", handlers.Login)
 	r.POST("/register", handlers.Register)
 	r.POST("/refresh", handlers.RefreshToken)
