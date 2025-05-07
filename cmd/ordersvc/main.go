@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"micro-golang/internal/config"
 	"micro-golang/internal/middleware"
 	"micro-golang/internal/order"
 	"os"
@@ -19,6 +20,12 @@ import (
  */
 
 func main() {
+
+	// DB初始化
+	config.ConnectDB()
+	// Redis 初始化
+	config.InitRedis()
+
 	port := os.Getenv("ORDER_PORT")
 	if port == "" {
 		port = "9000"

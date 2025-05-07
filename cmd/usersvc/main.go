@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"micro-golang/internal/config"
 	"micro-golang/internal/middleware"
 	"micro-golang/internal/user"
 	"net/http"
@@ -20,6 +21,11 @@ import (
  */
 
 func main() {
+
+	// DB初始化
+	config.ConnectDB()
+	// Redis 初始化
+	config.InitRedis()
 
 	port := os.Getenv("USER_PORT")
 	if port == "" {

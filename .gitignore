@@ -1,0 +1,57 @@
+# macOS 系統垃圾檔案
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+
+# Go module cache
+vendor/
+bin/
+pkg/
+
+# GoLand / VSCode 等 IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment / credentials
+.env
+.env*
+.env.local
+.env.*.local
+k8s/secret.yaml
+
+# DB dump or sqlite
+*.db
+*.sqlite3
+
+# Coverage or testing
+coverage.*
+*.coverprofile
+
+# OS-level temporary
+Thumbs.db
+Desktop.ini
+
+# Docker (如未來加上)
+docker-compose.override.yml
+*.pid
+
+# Node.js（如果前端會同 repo）
+node_modules/
+dist/
+
+# fly 相關
+.dockerignore
+fly.toml
+fly-deploy.yml

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"micro-golang/internal/config"
 	"time"
 )
 
@@ -19,9 +20,18 @@ import (
 var jwtKey = []byte("A9v$34Fjfl1.pMv@z6k1!qwe93Km!")
 
 func main() {
+
+	// DB初始化
+	config.ConnectDB()
+	// Redis 初始化
+	config.InitRedis()
+
 	r := gin.Default()
 	r.POST("/login", loginHandler)
-	r.Run(":7000")
+	err := r.Run(":7000")
+	if err != nil {
+		return
+	}
 }
 
 type loginReq struct{ User, Pass string }
