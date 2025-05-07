@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"micro-golang/internal/config"
-	"micro-golang/internal/middleware"
+	"micro-golang/internal/middlewares"
 	"micro-golang/internal/order"
 	"os"
 )
@@ -31,18 +31,18 @@ func main() {
 		port = "9000"
 	}
 
-	// User service URL from env
+	// User services URL from env
 	userSvcURL := os.Getenv("USER_SVC_URL")
 	if userSvcURL == "" {
 		userSvcURL = "http://localhost:8000"
 	}
 
 	r := gin.Default()
-	r.Use(middleware.JWTAuth())
+	r.Use(middlewares.JWTAuth())
 	oh := order.NewHandler(userSvcURL)
 	r.GET("/orders/:id", oh.GetOrder)
 	r.GET("/orders/email/:id", oh.GetOrderWithEmail)
 
-	log.Printf("Order service running on :%s\n", port)
+	log.Printf("Order services running on :%s\n", port)
 	log.Fatal(r.Run(":" + port))
 }

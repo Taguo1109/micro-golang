@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"micro-golang/internal/config"
-	"micro-golang/internal/middleware"
+	"micro-golang/internal/middlewares"
 	"micro-golang/internal/user"
 	"net/http"
 	"os"
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.Use(middleware.JWTAuth())
+	r.Use(middlewares.JWTAuth())
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
 	r.GET("/users/email/:id", uh.GetUserEmail)
@@ -43,7 +43,7 @@ func main() {
 		})
 	})
 
-	log.Printf("User service running on :%s\n", port)
+	log.Printf("User services running on :%s\n", port)
 	log.Fatal(r.Run(":" + port))
 
 }

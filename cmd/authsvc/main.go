@@ -1,9 +1,13 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"micro-golang/internal/config"
+	"micro-golang/internal/handlers"
+	"micro-golang/internal/middlewares"
 	"time"
 )
 
@@ -26,39 +30,46 @@ func main() {
 	// Redis 初始化
 	config.InitRedis()
 
+	// 驗證器設定
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// 註冊密碼驗證器
+		_ = v.RegisterValidation("pwd_validation", middlewares.UserPwd)
+		// 註冊使用者名稱驗證器
+		_ = v.RegisterValidation("username_validation", middlewares.UserName)
+	}
+
 	r := gin.Default()
-	r.POST("/login", loginHandler)
+	// 加入全域錯誤攔截器
+	r.Use(middlewares.GlobalErrorHandler())
+
+	// 跨域設定
+	setupCorsMiddleware(r)
+
+	r.POST("/login", handlers.Login)
+	r.POST("/register", handlers.Register)
+	r.POST("/refresh", handlers.RefreshToken)
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "測試是否自動部署"})
+	})
+	r.POST("/logout", handlers.LogoutHandler)
 	err := r.Run(":7000")
 	if err != nil {
 		return
 	}
 }
 
-type loginReq struct{ User, Pass string }
-type loginResp struct{ Token string }
-
-func loginHandler(c *gin.Context) {
-	var req loginReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "格式錯誤"})
-		return
-	}
-	// TODO: 在這裡驗 credentials (DB or in-memory)
-	if !(req.User == "demo" && req.Pass == "1234") {
-		c.JSON(401, gin.H{"error": "帳密錯誤"})
-		return
-	}
-
-	// 簽發 JWT
-	claims := jwt.RegisteredClaims{
-		Subject:   req.User,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokStr, err := token.SignedString(jwtKey)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "無法簽發 Token"})
-		return
-	}
-	c.JSON(200, loginResp{Token: tokStr})
+// setupCorsMiddleware 設置CORS中間件
+func setupCorsMiddleware(r *gin.Engine) {
+	// 加入 CORS 設定
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5173",       // 本地開發用
+			"https://taguo1109.github.io", // GitHub Pages 正式站
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, // 如果你有用 cookie/token
+		MaxAge:           12 * time.Hour,
+	}))
 }
