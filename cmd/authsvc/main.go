@@ -44,14 +44,15 @@ func main() {
 
 	// 跨域設定
 	setupCorsMiddleware(r)
-	r.Group("/auth")
-	r.POST("/login", handlers.Login)
-	r.POST("/register", handlers.Register)
-	r.POST("/refresh", handlers.RefreshToken)
-	r.GET("/ping", func(c *gin.Context) {
+	
+	auth := r.Group("/auth")
+	auth.POST("/login", handlers.Login)
+	auth.POST("/register", handlers.Register)
+	auth.POST("/refresh", handlers.RefreshToken)
+	auth.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "測試是否自動部署"})
 	})
-	r.POST("/logout", handlers.LogoutHandler)
+	auth.POST("/logout", handlers.LogoutHandler)
 	err := r.Run(":7000")
 	if err != nil {
 		return
