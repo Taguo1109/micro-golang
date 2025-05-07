@@ -44,7 +44,7 @@ func main() {
 
 	// 跨域設定
 	setupCorsMiddleware(r)
-	
+
 	auth := r.Group("/auth")
 	auth.POST("/login", handlers.Login)
 	auth.POST("/register", handlers.Register)
@@ -53,7 +53,7 @@ func main() {
 		c.JSON(200, gin.H{"message": "測試是否自動部署"})
 	})
 	auth.POST("/logout", handlers.LogoutHandler)
-	err := r.Run(":7000")
+	err := r.Run(":7001")
 	if err != nil {
 		return
 	}
