@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 	"micro-golang/internal/config"
@@ -8,6 +9,7 @@ import (
 	"micro-golang/internal/user"
 	"net/http"
 	"os"
+	"time"
 )
 
 /**
@@ -33,8 +35,14 @@ func main() {
 	}
 
 	r := gin.Default()
+	
 	// 需權限的名單
 	r.Use(middlewares.JWTAuth())
+	// 加入全域錯誤攔截器
+	r.Use(middlewares.GlobalErrorHandler())
+	// 跨域設定
+	setupCorsMiddleware(r)
+
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
 	r.GET("/users/email/:id", uh.GetUserEmail)
@@ -48,4 +56,20 @@ func main() {
 	log.Printf("User services running on :%s\n", port)
 	log.Fatal(r.Run(":" + port))
 
+}
+
+// setupCorsMiddleware 設置CORS中間件
+func setupCorsMiddleware(r *gin.Engine) {
+	// 加入 CORS 設定
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5173",       // 本地開發用
+			"https://taguo1109.github.io", // GitHub Pages 正式站
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, // 如果你有用 cookie/token
+		MaxAge:           12 * time.Hour,
+	}))
 }
