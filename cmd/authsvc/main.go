@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"micro-golang/internal/auth"
 	"micro-golang/internal/config"
-	"micro-golang/internal/handlers"
 	"micro-golang/internal/middlewares"
 	"time"
 )
@@ -45,14 +45,15 @@ func main() {
 	// 跨域設定
 	setupCorsMiddleware(r)
 
-	auth := r.Group("/auth")
-	auth.POST("/login", handlers.Login)
-	auth.POST("/register", handlers.Register)
-	auth.POST("/refresh", handlers.RefreshToken)
-	auth.GET("/ping", func(c *gin.Context) {
+	authGroup := r.Group("/auth")
+	ah := auth.NewHandler(auth.Service{})
+	authGroup.POST("/login", ah.Login)
+	authGroup.POST("/register", ah.Register)
+	authGroup.POST("/refresh", ah.RefreshToken)
+	authGroup.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "測試是否自動部署"})
 	})
-	auth.POST("/logout", handlers.LogoutHandler)
+	authGroup.POST("/logout", ah.LogoutHandler)
 	err := r.Run(":7001")
 	if err != nil {
 		return

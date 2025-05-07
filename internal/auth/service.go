@@ -1,4 +1,4 @@
-package services
+package auth
 
 import (
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,7 @@ import (
 )
 
 /**
- * @File: auth_service.go
+ * @File: service.go
  * @Description:
  *
  * @Author: Timmy
@@ -19,16 +19,16 @@ import (
  * @Version:  1.0
  */
 
-// AuthService encapsulates authentication logic
-type AuthService struct{}
+// Service encapsulates authentication logic
+type Service struct{}
 
-// NewAuthService creates a new AuthService instance
-func NewAuthService() *AuthService {
-	return &AuthService{}
+// NewService creates a new AuthService instance
+func NewService() *Service {
+	return &Service{}
 }
 
 // Register 直接在 Service 呼叫 utils 返回 JSON，無需回傳任何參數
-func (s *AuthService) Register(c *gin.Context, input dto.UserRegisterDTO) {
+func (s *Service) Register(c *gin.Context, input dto.UserRegisterDTO) {
 	// 1. 密碼雜湊
 	hashed, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {

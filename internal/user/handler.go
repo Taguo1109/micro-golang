@@ -6,7 +6,7 @@ import (
 )
 
 /**
- * @File: auth_handler.go
+ * @File: handler.go
  * @Description:
  *
  * @Author: Timmy

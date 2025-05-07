@@ -1,4 +1,4 @@
-package handlers
+package auth
 
 import (
 	"encoding/json"
@@ -10,14 +10,13 @@ import (
 	"micro-golang/internal/config"
 	"micro-golang/internal/dto"
 	"micro-golang/internal/models"
-	"micro-golang/internal/services"
 	"micro-golang/internal/utils"
 	"net/http"
 	"time"
 )
 
 /**
- * @File: auth_handler.go
+ * @File: handler.go
  * @Description:
  *
  * @Author: Timmy
@@ -26,8 +25,21 @@ import (
  * @Version:  1.0
  */
 
+// Handler 負責處理認證相關的 HTTP 請求
+type Handler struct {
+	authService Service // 注入 AuthService
+}
+
+// NewHandler 是一個建構函式，用於建立 AuthHandler 的實例
+// AuthService 應該在 main.go 或設定路由的地方被初始化並傳入
+func NewHandler(authService Service) *Handler {
+	return &Handler{
+		authService: authService,
+	}
+}
+
 // Register 會員註冊
-func Register(c *gin.Context) {
+func (h *Handler) Register(c *gin.Context) {
 	var input dto.UserRegisterDTO
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -42,11 +54,11 @@ func Register(c *gin.Context) {
 		return
 	}
 	// 呼叫service，內部會直接回 JSON
-	services.NewAuthService().Register(c, input)
+	h.authService.Register(c, input)
 }
 
 // Login 會員登入
-func Login(c *gin.Context) {
+func (h *Handler) Login(c *gin.Context) {
 	var input dto.UserLoginDTO
 	var dbUser models.User
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -104,7 +116,7 @@ func Login(c *gin.Context) {
 }
 
 // RefreshToken 重新獲取 Token
-func RefreshToken(c *gin.Context) {
+func (h *Handler) RefreshToken(c *gin.Context) {
 	// 從 JSON 或 localStorage 帶進來
 	var input struct {
 		RefreshToken string `json:"refresh_token"`
@@ -171,13 +183,7 @@ func RefreshToken(c *gin.Context) {
 }
 
 // LogoutHandler 登出
-// @Summary 使用者登出
-// @Description 清除使用者的 access_token 和 refresh_token cookie
-// @Tags Auth
-// @Produce json
-// @Success 200 {object} utils.JsonResult "成功登出訊息"
-// @Router /logout [post]
-func LogoutHandler(c *gin.Context) {
+func (h *Handler) LogoutHandler(c *gin.Context) {
 
 	var input dto.UserDTO
 	if err := c.ShouldBindJSON(&input); err != nil {

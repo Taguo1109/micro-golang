@@ -1,7 +1,7 @@
 package user
 
 /**
- * @File: auth_service.go
+ * @File: service.go
  * @Description:
  *
  * @Author: Timmy
