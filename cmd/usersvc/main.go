@@ -33,10 +33,12 @@ func main() {
 	}
 
 	r := gin.Default()
+	// 需權限的名單
 	r.Use(middlewares.JWTAuth())
 	uh := user.NewHandler()
 	r.GET("/users/:id", uh.GetUser)
 	r.GET("/users/email/:id", uh.GetUserEmail)
+	r.GET("/users/profile", uh.GetProfile)
 	r.GET("/api/v1/users/:id", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"test": "測試nginx新的url",
