@@ -41,3 +41,10 @@ type UserRegisterDTO struct {
 	Password string `json:"password" binding:"required,pwd_validation" validateMsg:"required=密碼為必填,pwd_validation=密碼需包含至少一個大寫與一個小寫字母，且長度 6~30 字" example:"P@ssw0rd"`
 	Role     string `json:"role" binding:"required,oneof=User Admin SuperAdmin" validateMsg:"required=角色為必填,oneof=角色只能是 User、Admin 或 SuperAdmin" example:"User"`
 }
+
+// UserUpdateProfileDTO defines the fields for updating a user's profile.
+// Using pointers to allow partial updates (fields not provided will not be changed).
+type UserUpdateProfileDTO struct {
+	Username *string `json:"username" example:"newAwesomeUser"`     // Optional: new username
+	Email    *string `json:"email" example:"new.email@example.com"` // Optional: new email
+}

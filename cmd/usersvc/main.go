@@ -35,7 +35,7 @@ func main() {
 	}
 
 	r := gin.Default()
-	
+
 	// 跨域設定(要先放跨域)在擺權限過濾
 	setupCorsMiddleware(r)
 	// 需權限的名單
@@ -43,11 +43,27 @@ func main() {
 	// 加入全域錯誤攔截器
 	r.Use(middlewares.GlobalErrorHandler())
 
-	uh := user.NewHandler()
-	r.GET("/users/:id", uh.GetUser)
-	r.GET("/users/email/:id", uh.GetUserEmail)
-	r.GET("/users/profile", uh.GetProfile)
-	r.GET("/api/v1/users/:id", func(c *gin.Context) {
+	// 1. 獲取 DB 和 Redis 客戶端實例
+	// 這些應該在你的應用程式生命週期的早期就被初始化。
+	// 例如，如果它們可以通過 config 套件全局訪問：
+	dbInstance := config.DB           // 你的 *gorm.DB 實例
+	redisClientInstance := config.RDB // 你的 *redis.Client 實例
+	// 2. 創建 user.Service 的實例
+	// NewService 是在你的 user 套件中定義的
+	userServiceInstance := user.NewService(dbInstance, redisClientInstance)
+	// 3. 創建 user.Handler 的實例，並傳入 userServiceInstance
+	// NewHandler 也是在你的 user 套件中定義的
+	uh := user.NewHandler(userServiceInstance)
+
+	ur := r.Group("/users")
+	ur.GET("/:id", uh.GetUser)
+	ur.GET("/email/:id", uh.GetUserEmail)
+	// 獲取個人資料
+	ur.GET("/profile", uh.GetProfile)
+	// 更新個人資料
+	ur.PUT("/profile", uh.UpdateProfile)
+
+	ur.GET("/api/v1/users/:id", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"test": "測試nginx新的url",
 		})
