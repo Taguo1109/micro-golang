@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"micro-golang/internal/config"
 	"micro-golang/internal/dto"
 	"micro-golang/internal/models"
@@ -117,6 +118,8 @@ func (h *Handler) UpdateProfile(c *gin.Context) {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		case errors.Is(err, ErrUpdateNoChanges):
 			// 如果 ErrUpdateNoChanges 伴隨 updatedUserDTO 返回，說明請求有效但無實際變更
+			log.Println(err.Error())
+			log.Println(err)
 			if updatedUserDTO != nil {
 				utils.ReturnSuccess(c, updatedUserDTO, "No effective changes to user profile.")
 			} else {

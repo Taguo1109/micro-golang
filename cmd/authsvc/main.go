@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"log"
 	"micro-golang/internal/auth"
 	"micro-golang/internal/config"
 	"micro-golang/internal/middlewares"
@@ -25,6 +26,8 @@ var jwtKey = []byte("A9v$34Fjfl1.pMv@z6k1!qwe93Km!")
 
 func main() {
 
+	// 新增log 完整資訊
+	initializeLogger()
 	// DB初始化
 	config.ConnectDB()
 	// Redis 初始化
@@ -74,4 +77,20 @@ func setupCorsMiddleware(r *gin.Engine) {
 		AllowCredentials: true, // 如果你有用 cookie/token
 		MaxAge:           12 * time.Hour,
 	}))
+}
+
+// initializeLogger 增加 log 完整資訊
+func initializeLogger() {
+	// 結合標準旗標 (日期時間) 與短檔案名/行號
+	//log.SetFlags(log.LstdFlags | log.Lshortfile)
+	// 如果你想使用完整路徑，可以替換為：
+	log.SetFlags(log.LstdFlags | log.Llongfile)
+
+	// 你也可以將日誌輸出到檔案而不是標準錯誤輸出
+	// file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	// if err == nil {
+	//     log.SetOutput(file)
+	// } else {
+	//     log.Println("無法開啟日誌檔案:", err)
+	// }
 }

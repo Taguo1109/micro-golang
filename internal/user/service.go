@@ -87,21 +87,7 @@ func (s *Service) UpdateUserProfile(ctx context.Context, currentEmail string, re
 		user.Email = newEmail
 		emailChanged = true
 	}
-
-	if len(updates) == 0 {
-		// 如果 DTO 有值但值與現有資料相同，這裡也會被觸發
-		// 可以回傳更新後的 user DTO，並標註 "no effective changes"
-		// 或者嚴格一點，若 DTO 有提供值但值未變，也視為 ErrUpdateNoChanges
-		// 這裡我們假設只要有欄位被提供，就算值相同也繼續，讓 DB 的 updated_at 更新
-		// 若要嚴格 "no changes"，則需調整此處邏輯
-		// return nil, ErrUpdateNoChanges // 如果 DTO 提供的值與現有值相同，則視為無變更
-	}
-	// 即使沒有欄位需要更新，但若 DTO 有提供，也可能只是值相同，
-	// 為了確保 updated_at 被更新 (如果這是期望行為)，我們可以繼續執行。
-	// 如果嚴格要求只有在值不同的情況下才更新，那麼上面的 len(updates) == 0 判斷應該更早。
-	// 目前的邏輯是，只要 updates map 中有值，就會執行更新。
-	// 若 DTO 中有值，但與 DB 中相同，updates map 中就不會有該欄位。
-
+	
 	// 如果真的沒有任何欄位被賦予新值 (DTO 有值但與 DB 相同，或 DTO 欄位為 nil)
 	if len(updates) == 0 {
 		// 返回當前用戶信息，表示沒有實際更改
